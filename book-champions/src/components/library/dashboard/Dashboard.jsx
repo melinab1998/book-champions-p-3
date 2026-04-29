@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Books from "../books/Books";
 import NewBook from "../newBook/NewBook";
 import { useNavigate } from "react-router";
 import { Button } from "react-bootstrap";
 import { Routes, Route } from "react-router";
 import BookDetails from "../bookDetails/BookDetails";
+import { successToast, errorToast } from "../../../utils/notifications";
 
 function Dashboard({ onLogout }) {
 
@@ -19,58 +20,38 @@ function Dashboard({ onLogout }) {
         navigate("add-book", { replace: true });
     };
 
-    const books = [
-        {
-            id: 1,
-            title: "100 años de soledad",
-            author: "Gabriel García Márquez",
-            rating: 5,
-            pageCount: 410,
-            imageUrl: "https://covers.openlibrary.org/b/isbn/9780307474728-L.jpg",
-            available: true,
-            summary: "Muchos años después, frente al pelotón de fusilamiento, el coronel Aureliano Buendía recordaría aquella tarde en que su padre lo llevó a conocer el hielo. La historia de la familia Buendía mezcla realismo y fantasía en un relato inolvidable sobre el amor, la tragedia y el destino."
-        },
-        {
-            id: 2,
-            title: "El principito",
-            author: "Antoine de Saint-Exupéry",
-            rating: 4.5,
-            pageCount: 96,
-            imageUrl: "https://covers.openlibrary.org/b/isbn/9780156013987-L.jpg",
-            available: true,
-            summary: "Un pequeño príncipe viaja de planeta en planeta aprendiendo sobre la vida, la amistad y el amor. Una obra poética que invita a ver el mundo con los ojos de un niño."
-        },
-        {
-            id: 3,
-            title: "Harry Potter y la piedra filosofal",
-            author: "J.K. Rowling",
-            rating: 4.8,
-            pageCount: 223,
-            imageUrl: "https://covers.openlibrary.org/b/isbn/9788478884452-L.jpg",
-            available: false,
-            summary: "Harry descubre que es un mago y comienza su formación en Hogwarts. Allí vivirá aventuras, hará amigos y enfrentará peligros relacionados con su pasado."
-        },
-        {
-            id: 4,
-            title: "Orgullo y prejuicio",
-            author: "Jane Austen",
-            rating: 4.6,
-            pageCount: 279,
-            imageUrl: "https://covers.openlibrary.org/b/isbn/9780141439518-L.jpg",
-            available: true,
-            summary: "La historia de Elizabeth Bennet y el señor Darcy, donde el amor se enfrenta a los prejuicios sociales y personales en la Inglaterra del siglo XIX."
-        }
-    ];
+    const [bookList, setBookList] = useState([]);
 
-    const [bookList, setBookList] = useState(books);
+    useEffect(()=> {
+        fetch("http://localhost:3000/books")
+        .then(res => res.json())
+        .then(data =>  setBookList(data))
+        .catch(err => console.log(err));
+    }, []);
 
     const handleBookAdded = (enteredBook) => {
-        const bookData = {
-            ...enteredBook,
-            id: Math.random()
-        };
 
-        setBookList(prev => [bookData, ...prev]);
+        if(!enteredBook.title || !enteredBook.author){
+            errorToast("Titulo y autor son obligatorios.");
+            return;
+        }
+
+        fetch("http://localhost:3000/books", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(enteredBook)
+        })
+        .then(res => res.json())
+        .then(data => {
+            setBookList(prev => [data, ...prev]);
+            successToast("Libro agregado correctamente");
+            navigate("/library");
+        })
+        .catch(err => {
+            errorToast("No se pudo agregar el libro");
+        });
     };
 
     return (

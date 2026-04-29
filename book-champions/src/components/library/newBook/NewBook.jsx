@@ -10,6 +10,7 @@ const NewBook = ({ onBookAdded }) => {
     const [rating, setRating] = useState("");
     const [pageCount, setPageCount] = useState("");
     const [imageUrl, setImageUrl] = useState("");
+    const [summary, setSummary] = useState("");
     const [available, setAvailable] = useState(false);
     const navigate = useNavigate();
 
@@ -34,6 +35,11 @@ const NewBook = ({ onBookAdded }) => {
     const handleChangeImageUrl = (event) => {
         setImageUrl(event.target.value);
     }
+
+    const handleChangeSummary = (event) => {
+        setSummary(event.target.value);
+    }
+
     const handleChangeAvailable = (event) => {
         setAvailable(event.target.checked);
     }
@@ -45,6 +51,7 @@ const NewBook = ({ onBookAdded }) => {
         const bookData = {
             title,
             author,
+            summary,
             rating: parseInt(rating, 10),
             pageCount: parseInt(pageCount, 10),
             imageUrl,
@@ -58,7 +65,8 @@ const NewBook = ({ onBookAdded }) => {
         setRating("");
         setPageCount("");
         setImageUrl("");
-        setAvailable("");
+        setSummary("");
+        setAvailable(false);
 
     }
 
@@ -107,6 +115,18 @@ const NewBook = ({ onBookAdded }) => {
                                 />
                             </Form.Group>
                         </Col>
+                    </Row>
+                    <Row>
+                        <Form.Group className="mb-3" controlId="summary">
+                            <Form.Label>Resumen</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                placeholder="Ingresar resumen"
+                                onChange={handleChangeSummary}
+                                value={summary}
+                            />
+                        </Form.Group>
                     </Row>
                     <Row className="justify-content-between">
                         <Form.Group className="mb-3" controlId="imageUrl">

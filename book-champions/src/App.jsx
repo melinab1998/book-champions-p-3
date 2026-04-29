@@ -4,6 +4,8 @@ import Dashboard from "./components/library/dashboard/Dashboard"
 import NotFound from "./components/ui/notFound/NotFound";
 import Protected from "./components/auth/protected/Protected";
 import { useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      <ToastContainer/>
     </div>
   )
 }
