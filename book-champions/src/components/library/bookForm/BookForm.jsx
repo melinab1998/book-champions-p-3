@@ -3,15 +3,15 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
 
 
-const NewBook = ({ onBookAdded }) => {
+const BookForm = ({ onBookAdded, onBookSaved, isEditing = false, book }) => {
 
-    const [title, setTitle] = useState("");
-    const [author, setAuthor] = useState("");
-    const [rating, setRating] = useState("");
-    const [pageCount, setPageCount] = useState("");
-    const [imageUrl, setImageUrl] = useState("");
-    const [summary, setSummary] = useState("");
-    const [available, setAvailable] = useState(false);
+    const [title, setTitle] = useState(book?.title);
+    const [author, setAuthor] = useState(book?.author);
+    const [rating, setRating] = useState(book?.rating);
+    const [pageCount, setPageCount] = useState(book?.pageCount);
+    const [imageUrl, setImageUrl] = useState(book?.imageUrl);
+    const [summary, setSummary] = useState(book?.summary);
+    const [available, setAvailable] = useState(book?.available);
     const navigate = useNavigate();
 
     const handleBack = () => {
@@ -44,7 +44,7 @@ const NewBook = ({ onBookAdded }) => {
         setAvailable(event.target.checked);
     }
 
-    const handleAddBook = (event) => {
+    const handleSaveBook = (event) => {
 
         event.preventDefault();
 
@@ -58,7 +58,11 @@ const NewBook = ({ onBookAdded }) => {
             available
         }
 
-        onBookAdded(bookData);
+        if(isEditing){
+            onBookSaved(bookData)
+        }else{
+            onBookAdded(bookData);
+        }
 
         setTitle("");
         setAuthor("");
@@ -74,7 +78,7 @@ const NewBook = ({ onBookAdded }) => {
     return (
         <Card className="m-4 w-50" bg="success">
             <Card.Body>
-                <Form className="text-white" onSubmit={handleAddBook}>
+                <Form className="text-white" onSubmit={handleSaveBook}>
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-3" controlId="title">
@@ -150,7 +154,7 @@ const NewBook = ({ onBookAdded }) => {
                                     Volver
                                 </Button>
                                 <Button variant="primary" type="submit">
-                                    Agregar lectura
+                                    {isEditing?"Editar lectura":"Agregar lectura"}
                                 </Button>
                             </div>
                         </Col>
@@ -162,4 +166,4 @@ const NewBook = ({ onBookAdded }) => {
 };
 
 
-export default NewBook;
+export default BookForm;

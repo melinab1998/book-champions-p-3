@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Books from "../books/Books";
-import NewBook from "../newBook/NewBook";
-import { useNavigate } from "react-router";
+import BookForm from "../bookForm/BookForm"
+import { useNavigate, useLocation } from "react-router";
 import { Button } from "react-bootstrap";
 import { Routes, Route } from "react-router";
 import BookDetails from "../bookDetails/BookDetails";
@@ -10,6 +10,7 @@ import { successToast, errorToast } from "../../../utils/notifications";
 function Dashboard({ onLogout }) {
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogoutClick = () => {
         onLogout();
@@ -23,11 +24,13 @@ function Dashboard({ onLogout }) {
     const [bookList, setBookList] = useState([]);
 
     useEffect(()=> {
+        if(location.pathname == "/library"){
         fetch("http://localhost:3000/books")
         .then(res => res.json())
         .then(data =>  setBookList(data))
         .catch(err => console.log(err));
-    }, []);
+        }    
+    }, [location]);
 
     const handleBookAdded = (enteredBook) => {
 
@@ -67,7 +70,7 @@ function Dashboard({ onLogout }) {
             <h2>Books Champion App</h2>
             <Routes>
                 <Route index element={<Books books={bookList} />} />
-                <Route path="add-book" element={<NewBook onBookAdded={handleBookAdded} />} />
+                <Route path="add-book" element={<BookForm onBookAdded={handleBookAdded} />} />
                 <Route path=":id" element={<BookDetails />} />
             </Routes>
         </div>
