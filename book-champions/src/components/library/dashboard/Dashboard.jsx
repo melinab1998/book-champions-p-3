@@ -6,6 +6,7 @@ import { Button } from "react-bootstrap";
 import { Routes, Route } from "react-router";
 import BookDetails from "../bookDetails/BookDetails";
 import { successToast, errorToast } from "../../../utils/notifications";
+import { getBooks, addBook } from "../dashboard/Dashboard.services.js"
 
 function Dashboard({ onLogout }) {
 
@@ -23,38 +24,38 @@ function Dashboard({ onLogout }) {
 
     const [bookList, setBookList] = useState([]);
 
-    useEffect(()=> {
-        if(location.pathname == "/library"){
-        fetch("http://localhost:3000/books")
-        .then(res => res.json())
-        .then(data =>  setBookList(data))
-        .catch(err => console.log(err));
-        }    
+    useEffect(() => {
+        if (location.pathname == "/library") {
+
+            getBooks(
+                (data) => setBookList(data),
+                (err) => {
+                    console.log(err);
+                    errorToast(err.message);
+                }
+            );
+
+        }
     }, [location]);
 
     const handleBookAdded = (enteredBook) => {
 
-        if(!enteredBook.title || !enteredBook.author){
+        if (!enteredBook.title || !enteredBook.author) {
             errorToast("Titulo y autor son obligatorios.");
             return;
         }
 
-        fetch("http://localhost:3000/books", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
+        addBook(
+            enteredBook,
+            (data) => {
+                setBookList(prev => [data, ...prev]);
+                successToast("Libro agregado correctamente");
+                navigate("/library");
             },
-            body: JSON.stringify(enteredBook)
-        })
-        .then(res => res.json())
-        .then(data => {
-            setBookList(prev => [data, ...prev]);
-            successToast("Libro agregado correctamente");
-            navigate("/library");
-        })
-        .catch(err => {
-            errorToast("No se pudo agregar el libro");
-        });
+            (err) => {
+                errorToast(err.message);
+            }
+        );
     };
 
     return (
