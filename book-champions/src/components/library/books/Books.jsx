@@ -2,7 +2,7 @@ import BookItem from "../bookItem/BookItem";
 import BookSearch from "../bookSearch/bookSearch";
 import { useState } from "react";
 
-const Books = ({ books }) => {
+const Books = ({ books, onDeleteBook }) => {
 
     const [search, setSearch] = useState("");
 
@@ -30,7 +30,8 @@ const Books = ({ books }) => {
                                 pageCount={book.pageCount}
                                 imageUrl={book.imageUrl}
                                 available={book.available}
-                                summary={book.summary}   
+                                summary={book.summary}
+                                onDelete={() => onDeleteBook(book.id)}   
                             />
                         ))
                 }

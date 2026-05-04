@@ -57,6 +57,21 @@ function Dashboard({ onLogout }) {
         });
     };
 
+    const handleDeleteBook = (id) => {
+        fetch(`http://localhost:3000/books/${id}`, {
+            method: "DELETE"
+        })
+            .then(res => res.text()) 
+            .then(() => {
+                setBookList(prev => prev.filter(book => book.id !== id));
+                successToast("Libro eliminado correctamente");
+            })
+            .catch(err => {
+                console.log(err);
+                errorToast("Error al eliminar el libro");
+            });
+    };
+
     return (
         <div className="d-flex flex-column align-items-center w-100">
             <div className="w-100 d-flex justify-content-end p-3 gap-2">
@@ -69,7 +84,10 @@ function Dashboard({ onLogout }) {
             </div>
             <h2>Books Champion App</h2>
             <Routes>
-                <Route index element={<Books books={bookList} />} />
+                <Route
+                    index
+                    element={<Books books={bookList} onDeleteBook={handleDeleteBook} />}
+                />
                 <Route path="add-book" element={<BookForm onBookAdded={handleBookAdded} />} />
                 <Route path=":id" element={<BookDetails />} />
             </Routes>
