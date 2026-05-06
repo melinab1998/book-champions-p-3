@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Button, Card, Col, Form, FormGroup, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
 
-const Login = ({onLogin}) => {
+const Login = ({ onLogin }) => {
 
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
@@ -11,47 +11,64 @@ const Login = ({onLogin}) => {
     const passwordRef = useRef(null);
 
     const [errors, setErrors] = useState({
-    email: false, 
-    password: false});
+        email: false,
+        password: false
+    });
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value)
-        setErrors({...errors, email: false});
+        setErrors({ ...errors, email: false });
     }
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value)
-        setErrors({...errors, password: false});
+        setErrors({ ...errors, password: false });
     }
 
-/*     const handleSubmit = (event) => {
-        event.preventDefault();
-        alert(`El email ingresado es: ${email} y el password es ${password}`)
-    } */
+    const handleRegisterClick = () => {
+        navigate("/register");
+    }
 
     const handleLogin = (event) => {
 
         event.preventDefault();
 
-        if (!emailRef.current.value.length){
-            setErrors({...errors, email: true});
+        if (!emailRef.current.value.length) {
+            setErrors({ ...errors, email: true });
             alert("Email vacío");
             emailRef.current.focus();
             return;
         }
 
-        else if(!password.length || password.length < 7){
-            setErrors({...errors, password: true});
+        else if (!password.length || password.length < 7) {
+            setErrors({ ...errors, password: true });
             alert("Password vacío");
             passwordRef.current.focus();
             return;
         }
 
-        setErrors({email: false, password: false})
-        alert(`El email ingresado es ${email} y el password es ${password}`);
-        onLogin();
-        navigate("/library");
+        setErrors({ email: false, password: false })
+        fetch("http://localhost:3000/login", {
+            headers: { "Content-type": "application/json" },
+            method: "POST",
+            body: JSON.stringify({ email, password })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Email y/o contraseña incorrecta.");
+                }
+                return res.json();
+            })
+            .then(token => {
+                localStorage.setItem("book-champions-token", token);
+                onLogin();
+                navigate("/library");
+            })
+            .catch(err => {
+                errorToast(err.message);
+            });
     }
+
 
     return (
         <Card className="mt-5 mx-3 p-3 px-5 shadow">
@@ -86,6 +103,10 @@ const Login = ({onLogin}) => {
                                 Iniciar sesión
                             </Button>
                         </Col>
+                    </Row>
+                    <Row className="mt-4">
+                        <p className="text-center fw-bold">¿Aún no tenés cuenta?</p>
+                        <Button onClick={handleRegisterClick}>Registrarse</Button>
                     </Row>
                 </Form>
             </Card.Body>

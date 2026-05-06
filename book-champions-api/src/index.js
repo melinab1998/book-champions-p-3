@@ -1,5 +1,6 @@
 import express from "express";
 import bookRoutes from "./routes/books.routes.js"
+import authRoutes from "./routes/auth.routes.js"
 import "./models/Book.js"
 import { sequelize } from "./db/db.js";
 
@@ -17,6 +18,7 @@ try {
     });
     app.listen(PORT);
     app.use(bookRoutes);
+    app.use(authRoutes);
     await sequelize.sync({ alter: true })
     console.log(`Server listening on port ${PORT}`);
 } catch (error) {
