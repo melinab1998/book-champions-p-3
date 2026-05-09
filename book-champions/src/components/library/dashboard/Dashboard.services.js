@@ -76,3 +76,23 @@ export const loginUser = (email, password, onSuccess, onError) => {
     .then(onSuccess)
     .catch(onError);
 };
+
+export const registerUser = (name, email, password, onSuccess, onError) => {
+    fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: JSON.stringify({ name, email, password })
+    })
+    .then(async res => {
+        if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.message || "Algo ha salido mal");
+        }
+
+        return res.json();
+    })
+    .then(onSuccess)
+    .catch(onError);
+};

@@ -4,6 +4,7 @@ import AuthContainer from "../authContainer/AuthContainer.jsx"
 import { useState, useRef } from "react";
 import { errorToast, successToast } from "../../../utils/notifications.js";
 import { validateEmail, validatePassword } from "../../../utils/validations.js";
+import { registerUser } from "../../library/dashboard/Dashboard.services.js";
 
 const Register = () => {
 
@@ -42,26 +43,27 @@ const Register = () => {
             errorToast("¡Email incorrecto!");
             emailRef.current.focus();
             return;
-        } else if (!password || !validatePassword(password, 7, null, true, true)) {
+        }
+        else if (!password || !validatePassword(password, 7, null, true, true)) {
             setErrors({ ...errors, password: true });
             errorToast("¡Contraseña incorrecta!");
             passwordRef.current.focus();
             return;
         }
 
-        fetch("http://localhost:3000/register", {
-            headers: {
-                "Content-type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify({ name, email, password })
-        })
-            .then(res => res.json())
-            .then(() => {
+        registerUser(
+            name,
+            email,
+            password,
+            () => {
                 successToast("¡Usuario creado exitosamente!");
                 navigate("/login");
-            })
-            .catch(err => console.log(err));
+            },
+            (err) => {
+                errorToast(err.message);
+                console.log(err);
+            }
+        );
     };
 
     return (
