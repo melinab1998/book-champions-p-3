@@ -3,6 +3,7 @@ import { Badge, Button, Card, Row } from "react-bootstrap";
 import { Star, StarFill } from "react-bootstrap-icons";
 import { useEffect, useState } from "react";
 import { successToast } from "../../../utils/notifications";
+import { updateBook } from "../dashboard/Dashboard.services";
 import BookForm from "../bookForm/BookForm";
 
 const BookDetails = () => {
@@ -12,9 +13,9 @@ const BookDetails = () => {
     const [showBookForm, setBookForm] = useState(false);
     const [book, setBook] = useState(null);
 
-    const {id} = useParams();
+    const { id } = useParams();
 
-    useEffect(()=>{
+    useEffect(() => {
         const bookState = {
             ...location.state.book, id: parseInt(id, 10)
         };
@@ -34,28 +35,28 @@ const BookDetails = () => {
     }
 
     const handleBookUpdate = (bookData) => {
-        setBook({...bookData, id: book.id});
+        setBook({ ...bookData, id: book.id });
     }
-
     const handleSaveBook = (bookData) => {
-        fetch(`http://localhost:3000/books/${book.id}`, {
-            headers: {
-                "Content-type": "application/json"
+
+        updateBook(
+            book.id,
+            bookData,
+            () => {
+                handleBookUpdate(bookData);
+                successToast(`¡Libro ${bookData.title} actualizado correctamente!`);
             },
-            method: "PUT",
-            body: JSON.stringify(bookData)
-        })
-        .then(res => res.json())
-        .then(()=>{
-            handleBookUpdate(bookData);
-            successToast(`¡Libro ${bookData.title} actualizado correctamente!`)
-        })
-        .catch(err => console.log(err));
-    }
+            (err) => {
+                console.log(err);
+                errorToast(err.message);
+            }
+        );
+
+    };
 
     return (
         <>
-        <Card className="my-3 w-25">
+            <Card className="my-3 w-25">
                 <Card.Img
                     height={500}
                     variant="top"
@@ -86,9 +87,9 @@ const BookDetails = () => {
                     </Row>
                 </Card.Body>
             </Card>
-            {showBookForm && <BookForm isEditing book={book} onBookSaved={handleSaveBook}/>}
+            {showBookForm && <BookForm isEditing book={book} onBookSaved={handleSaveBook} />}
         </>
-        
+
     );
 };
 

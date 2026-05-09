@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 import { Button, Card, Col, Form, FormGroup, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
+import { errorToast } from "../../../utils/notifications";
+import {validateEmail, validatePassword} from "../../../utils/validations.js"
+import { loginUser } from "../../library/dashboard/Dashboard.services.js";
 
 const Login = ({ onLogin }) => {
 
@@ -33,42 +36,34 @@ const Login = ({ onLogin }) => {
 
         event.preventDefault();
 
-        if (!emailRef.current.value.length) {
+        if (!emailRef.current.value.length || !validateEmail(email)) {
             setErrors({ ...errors, email: true });
-            alert("Email vacío");
+            errorToast("¡Email incorrecto!")
             emailRef.current.focus();
             return;
         }
 
-        else if (!password.length || password.length < 7) {
+        else if (!password.length || !validatePassword(password, 7, null, true, true)) {
             setErrors({ ...errors, password: true });
-            alert("Password vacío");
+            errorToast("¡Password incorrecto!")
             passwordRef.current.focus();
             return;
         }
 
         setErrors({ email: false, password: false })
-        fetch("http://localhost:3000/login", {
-            headers: { "Content-type": "application/json" },
-            method: "POST",
-            body: JSON.stringify({ email, password })
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error("Email y/o contraseña incorrecta.");
-                }
-                return res.json();
-            })
-            .then(token => {
+        loginUser(
+            email,
+            password,
+            (token) => {
                 localStorage.setItem("book-champions-token", token);
                 onLogin();
                 navigate("/library");
-            })
-            .catch(err => {
+            },
+            (err) => {
                 errorToast(err.message);
-            });
+            }
+        );
     }
-
 
     return (
         <Card className="mt-5 mx-3 p-3 px-5 shadow">

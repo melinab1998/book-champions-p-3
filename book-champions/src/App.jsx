@@ -27,7 +27,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/login' element={<Login onLogin={handleLogin} />} />
-          <Route path="/register" element={<Register/>}/>
+          <Route path="/register" element={<Register />} /> 
           <Route element={<Protected isSignedIn={loggedIn} />}>
             <Route path="/library/*" element={<Dashboard onLogout={handleLogout} />} />
           </Route>

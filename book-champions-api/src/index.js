@@ -16,13 +16,11 @@ try {
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     next();
     });
-    app.listen(PORT);
-    app.use(bookRoutes);
-    app.use(authRoutes);
     await sequelize.sync({ alter: true })
+    app.listen(PORT);
+    app.use(authRoutes);
+    app.use(bookRoutes);
     console.log(`Server listening on port ${PORT}`);
 } catch (error) {
     console.log(`There was an error on initialization`);
 }
-
-

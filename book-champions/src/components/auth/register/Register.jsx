@@ -1,18 +1,19 @@
 import { Button, Col, Form, FormGroup, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router";
-import AuthContainer from "../authContainer/AuthContainer.jsx";
+import AuthContainer from "../authContainer/AuthContainer.jsx"
 import { useState, useRef } from "react";
 import { errorToast, successToast } from "../../../utils/notifications.js";
+import { validateEmail, validatePassword } from "../../../utils/validations.js";
 
 const Register = () => {
+
     const navigate = useNavigate();
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState({
-        name: false, email: false, password: false
-    });
+
+    const [errors, setErrors] = useState({ name: false, email: false, password: false });
 
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
@@ -36,12 +37,12 @@ const Register = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!name || !email) {
+        if (!name || !email || !validateEmail(email)) {
             setErrors({ ...errors, email: true });
             errorToast("¡Email incorrecto!");
             emailRef.current.focus();
             return;
-        } else if (!password) {
+        } else if (!password || !validatePassword(password, 7, null, true, true)) {
             setErrors({ ...errors, password: true });
             errorToast("¡Contraseña incorrecta!");
             passwordRef.current.focus();
@@ -49,7 +50,9 @@ const Register = () => {
         }
 
         fetch("http://localhost:3000/register", {
-            headers: { "Content-type": "application/json" },
+            headers: {
+                "Content-type": "application/json"
+            },
             method: "POST",
             body: JSON.stringify({ name, email, password })
         })
@@ -64,7 +67,6 @@ const Register = () => {
     return (
         <AuthContainer>
             <Form onSubmit={handleSubmit}>
-
                 <FormGroup className="mb-3">
                     <Form.Control
                         type="text"
@@ -78,7 +80,6 @@ const Register = () => {
                         <p className="text-danger mt-1 mb-0">El nombre es obligatorio.</p>
                     )}
                 </FormGroup>
-
                 <FormGroup className="mb-3">
                     <Form.Control
                         type="email"
@@ -89,10 +90,9 @@ const Register = () => {
                         className={errors.email ? "border border-danger" : ""}
                     />
                     {errors.email && (
-                        <p className="text-danger mt-1 mb-0">Por favor ingresá un email válido.</p>
+                        <p className="text-danger mt-1 mb-0">Por favor ingresa un email válido.</p>
                     )}
                 </FormGroup>
-
                 <FormGroup className="mb-4">
                     <Form.Control
                         type="password"
@@ -104,12 +104,10 @@ const Register = () => {
                     />
                     {errors.password && (
                         <p className="text-danger mt-1 mb-0">
-                            La contraseña debe tener al menos 7 caracteres,
-                            con una minúscula y una mayúscula.
+                            La contraseña debe tener al menos 7 caracteres, con una minúscula y una mayúscula.
                         </p>
                     )}
                 </FormGroup>
-
                 <Row>
                     <Col className="d-flex justify-content-start">
                         <Link to="/login">
@@ -124,7 +122,6 @@ const Register = () => {
                         </Button>
                     </Col>
                 </Row>
-
             </Form>
         </AuthContainer>
     );
