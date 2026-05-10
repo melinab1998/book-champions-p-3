@@ -1,9 +1,12 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Button, Card, Col, Form, FormGroup, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import { errorToast } from "../../../utils/notifications";
-import {validateEmail, validatePassword} from "../../../utils/validations.js"
+import { validateEmail, validatePassword } from "../../../utils/validations.js"
 import { loginUser } from "../../library/dashboard/Dashboard.services.js";
+import { AuthenticationContext } from "../../services/auth/authContext.jsx"
+import ToggleTheme from "../../services/theme/ToggleTheme"
+import AuthContainer from "../authContainer/AuthContainer.jsx";
 
 const Login = ({ onLogin }) => {
 
@@ -17,6 +20,8 @@ const Login = ({ onLogin }) => {
         email: false,
         password: false
     });
+
+    const { handleUserLogin } = useContext(AuthenticationContext);
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value)
@@ -54,9 +59,8 @@ const Login = ({ onLogin }) => {
         loginUser(
             email,
             password,
-            (token) => {
-                localStorage.setItem("book-champions-token", token);
-                onLogin();
+            token => {
+                handleUserLogin(token)
                 navigate("/library");
             },
             (err) => {
@@ -66,46 +70,44 @@ const Login = ({ onLogin }) => {
     }
 
     return (
-        <Card className="mt-5 mx-3 p-3 px-5 shadow">
-            <Card.Body>
-                <Row className="mb-2">
-                    <h5>¡Bienvenidos a Books Champion!</h5>
+        <AuthContainer>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <ToggleTheme />
+            </div>
+            <Form onSubmit={handleLogin}>
+                <FormGroup className="mb-4">
+                    <Form.Control
+                        className={errors.email && "border border-danger"}
+                        type="email"
+                        ref={emailRef}
+                        placeholder="Ingresar email"
+                        onChange={handleEmailChange}
+                        value={email} />
+                </FormGroup>
+                <FormGroup className="mb-4">
+                    <Form.Control
+                        className={errors.password && "border border-danger"}
+                        type="password"
+                        ref={passwordRef}
+                        placeholder="Ingresar contraseña"
+                        onChange={handlePasswordChange}
+                        value={password}
+                    />
+                </FormGroup>
+                <Row>
+                    <Col />
+                    <Col md={6} className="d-flex justify-content-end">
+                        <Button variant="secondary" type="submit">
+                            Iniciar sesión
+                        </Button>
+                    </Col>
                 </Row>
-                <Form onSubmit={handleLogin}>
-                    <FormGroup className="mb-4">
-                        <Form.Control
-                            className={errors.email && "border border-danger"}
-                            type="email"
-                            ref={emailRef}
-                            placeholder="Ingresar email"
-                            onChange={handleEmailChange}
-                            value={email} />
-                    </FormGroup>
-                    <FormGroup className="mb-4">
-                        <Form.Control
-                            className={errors.password && "border border-danger"}
-                            type="password"
-                            ref={passwordRef}
-                            placeholder="Ingresar contraseña"
-                            onChange={handlePasswordChange}
-                            value={password}
-                        />
-                    </FormGroup>
-                    <Row>
-                        <Col />
-                        <Col md={6} className="d-flex justify-content-end">
-                            <Button variant="secondary" type="submit">
-                                Iniciar sesión
-                            </Button>
-                        </Col>
-                    </Row>
-                    <Row className="mt-4">
-                        <p className="text-center fw-bold">¿Aún no tenés cuenta?</p>
-                        <Button onClick={handleRegisterClick}>Registrarse</Button>
-                    </Row>
-                </Form>
-            </Card.Body>
-        </Card>
+                <Row className="mt-4">
+                    <p className="text-center fw-bold">¿Aún no tenés cuenta?</p>
+                    <Button onClick={handleRegisterClick}>Registrarse</Button>
+                </Row>
+            </Form>
+        </AuthContainer>
     );
 };
 

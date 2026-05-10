@@ -5,6 +5,7 @@ import { useState, useRef } from "react";
 import { errorToast, successToast } from "../../../utils/notifications.js";
 import { validateEmail, validatePassword } from "../../../utils/validations.js";
 import { registerUser } from "../../library/dashboard/Dashboard.services.js";
+import ToggleTheme from "../../services/theme/ToggleTheme.jsx"
 
 const Register = () => {
 
@@ -68,6 +69,9 @@ const Register = () => {
 
     return (
         <AuthContainer>
+            <div className="d-flex justify-content-end">
+                <ToggleTheme /> 
+            </div>
             <Form onSubmit={handleSubmit}>
                 <FormGroup className="mb-3">
                     <Form.Control
