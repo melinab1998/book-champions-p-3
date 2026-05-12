@@ -1,0 +1,27 @@
+import { useState } from "react";
+import { AuthenticationContext } from "./authContext";
+
+const tokenValue = localStorage.getItem("book-champions-token");
+
+export const AuthContextProvider = ({ children }) => {
+
+    const [token, setToken] = useState(tokenValue);
+
+    const handleUserLogin = (token) => {
+        localStorage.setItem("book-champions-token", token);
+        setToken(token);
+    }
+
+    const handleUserLogout = () => {
+        localStorage.removeItem("book-champions-token");
+        setToken(null);
+    }
+
+    return (
+        <AuthenticationContext.Provider value={{ token, handleUserLogin, handleUserLogout }}>
+            {children}
+        </AuthenticationContext.Provider>
+    )
+
+
+}

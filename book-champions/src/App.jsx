@@ -11,25 +11,14 @@ import "react-toastify/dist/ReactToastify.css";
 
 function App() {
 
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  const handleLogin = () => {
-    setLoggedIn(true);
-  }
-
-  const handleLogout = () => {
-    setLoggedIn(false);
-    localStorage.removeItem("book-champions-token");
-  };
-
   return (
     <div className="d-flex flex-column align-items-center">
       <BrowserRouter>
         <Routes>
-          <Route path='/login' element={<Login onLogin={handleLogin} />} />
+          <Route path='/login' element={<Login />} />
           <Route path="/register" element={<Register />} /> 
-          <Route element={<Protected isSignedIn={loggedIn} />}>
-            <Route path="/library/*" element={<Dashboard onLogout={handleLogout} />} />
+          <Route element={<Protected />}>
+            <Route path="/library/*" element={<Dashboard />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Books from "../books/Books";
 import BookForm from "../bookForm/BookForm"
 import { useNavigate, useLocation } from "react-router";
@@ -7,22 +7,20 @@ import { Routes, Route } from "react-router";
 import BookDetails from "../bookDetails/BookDetails";
 import { successToast, errorToast } from "../../../utils/notifications";
 import { getBooks, addBook } from "../dashboard/Dashboard.services.js"
+import { AuthenticationContext } from "../../services/auth/authContext.jsx";
 
-function Dashboard({ onLogout }) {
+function Dashboard() {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    const handleLogoutClick = () => {
-        onLogout();
-        navigate("/login");
-    };
 
     const handleNavigateAddBook = () => {
         navigate("add-book", { replace: true });
     };
 
     const [bookList, setBookList] = useState([]);
+
+    const { handleUserLogout } = useContext(AuthenticationContext);
 
     useEffect(() => {
         if (location.pathname == "/library") {
@@ -64,7 +62,7 @@ function Dashboard({ onLogout }) {
                 <Button variant="secondary" onClick={handleNavigateAddBook}>
                     Agregar libro
                 </Button>
-                <Button variant="danger" onClick={handleLogoutClick}>
+                <Button variant="danger" onClick={handleUserLogout}>
                     Cerrar sesión
                 </Button>
             </div>
