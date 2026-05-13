@@ -5,8 +5,10 @@ import { errorToast } from "../../../utils/notifications";
 import { validateEmail, validatePassword } from "../../../utils/validations.js"
 import { loginUser } from "../../library/dashboard/Dashboard.services.js";
 import { AuthenticationContext } from "../../services/auth/authContext.jsx"
-import AuthContainer from "../authContainer/authContainer.jsx";
+import AuthContainer from "../authContainer/AuthContainer.jsx";
 import ToggleTheme from "../../services/theme/ToggleTheme.jsx"
+import ComboLanguage from "../../ui/ComboLanguage/ComboLanguage.jsx"
+import  useTranslate from "../../../hooks/useTranslate.jsx"
 
 const Login = ({ onLogin }) => {
 
@@ -17,6 +19,8 @@ const Login = ({ onLogin }) => {
     const passwordRef = useRef(null);
 
     const { handleUserLogin } = useContext(AuthenticationContext);
+
+    const translate = useTranslate();
 
     const [errors, setErrors] = useState({
         email: false,
@@ -71,6 +75,7 @@ const Login = ({ onLogin }) => {
 
     return (
         <AuthContainer>
+            <ComboLanguage/>
             <ToggleTheme/>
             <Form onSubmit={handleLogin}>
                 <FormGroup className="mb-4">
@@ -78,7 +83,7 @@ const Login = ({ onLogin }) => {
                         className={errors.email && "border border-danger"}
                         type="email"
                         ref={emailRef}
-                        placeholder="Ingresar email"
+                        placeholder={translate("email")}
                         onChange={handleEmailChange}
                         value={email} />
                 </FormGroup>
@@ -87,7 +92,7 @@ const Login = ({ onLogin }) => {
                         className={errors.password && "border border-danger"}
                         type="password"
                         ref={passwordRef}
-                        placeholder="Ingresar contraseña"
+                        placeholder={translate("password")}
                         onChange={handlePasswordChange}
                         value={password}
                     />
@@ -96,13 +101,13 @@ const Login = ({ onLogin }) => {
                     <Col />
                     <Col md={6} className="d-flex justify-content-end">
                         <Button variant="secondary" type="submit">
-                            Iniciar sesión
+                            {translate("login")}
                         </Button>
                     </Col>
                 </Row>
                 <Row className="mt-4">
-                    <p className="text-center fw-bold">¿Aún no tenés cuenta?</p>
-                    <Button onClick={handleRegisterClick}>Registrarse</Button>
+                    <p className="text-center fw-bold">{translate("login_no_account")}</p>
+                    <Button onClick={handleRegisterClick}>{translate("register")}</Button>
                 </Row>
             </Form>
         </AuthContainer>
